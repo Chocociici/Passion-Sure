@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Личный кабинет | Passion Sure</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #0a0a0a; color: #eaeaea; }
+        :root { --gold: #d4af37; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 0 2rem; }
+        
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 0;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .logo h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #fff, var(--gold));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .logo p { font-size: 0.7rem; letter-spacing: 2px; color: var(--gold); }
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .nav-links a {
+            color: #eaeaea;
+            text-decoration: none;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+        .nav-links a:hover, .nav-links .active { color: var(--gold); }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--gold);
+            padding: 0.5rem 1.2rem;
+            border-radius: 2rem;
+            color: var(--gold);
+            cursor: pointer;
+        }
+        .btn-primary {
+            background: var(--gold);
+            border: none;
+            padding: 0.5rem 1.5rem;
+            border-radius: 2rem;
+            font-weight: 600;
+            color: #0a0a0a;
+            cursor: pointer;
+        }
+        .profile-container { max-width: 1000px; margin: 2rem auto; }
+        .profile-card {
+            background: #111;
+            border-radius: 1.5rem;
+            padding: 2rem;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            margin-bottom: 2rem;
+        }
+        .order-item {
+            background: #1a1a1a;
+            padding: 1rem;
+            border-radius: 1rem;
+            margin-bottom: 1rem;
+        }
+        .comment-form textarea {
+            width: 100%;
+            background: #222;
+            border: 1px solid #333;
+            border-radius: 1rem;
+            padding: 1rem;
+            color: white;
+            font-family: inherit;
+            resize: vertical;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(10px);
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+        .modal-content {
+            background: #1a1a1a;
+            border-radius: 2rem;
+            padding: 2rem;
+            width: 90%;
+            max-width: 450px;
+            border: 1px solid var(--gold);
+        }
+        .modal-content input {
+            width: 100%;
+            margin: 0.5rem 0;
+            padding: 0.8rem;
+            border-radius: 1rem;
+            background: #222;
+            border: 1px solid #444;
+            color: white;
+        }
+        footer {
+            text-align: center;
+            padding: 2rem;
+            border-top: 1px solid #222;
+            margin-top: 3rem;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="navbar">
+        <div class="logo">
+            <h1>PASSION SURE</h1>
+            <p>ITALIAN AUTOMOTIVE MAESTRO</p>
+        </div>
+        <div class="nav-links">
+            <a href="index.html">Главная</a>
+            <a href="catalog.html">Каталог</a>
+            <a href="profile.html" class="active">Личный кабинет</a>
+        </div>
+    </div>
+
+    <div class="profile-container">
+        <div id="notLoggedIn" style="display:none; text-align:center; padding:3rem;">
+            <h2>🔐 Войдите в аккаунт</h2>
+            <button id="forceLoginBtn" class="btn-primary">Войти</button>
+        </div>
+        <div id="loggedIn" style="display:none;">
+            <div class="profile-card">
+                <h2><i class="fas fa-user-circle"></i> <span id="userName"></span></h2>
+                <p><i class="fas fa-envelope"></i> Email: <span id="userEmail"></span></p>
+                <p><i class="fas fa-calendar"></i> На сайте с: <span id="userSince"></span></p>
+            </div>
+            
+            <div class="profile-card">
+                <h3><i class="fas fa-comment"></i> Оставить отзыв</h3>
+                <div class="comment-form">
+                    <textarea id="commentText" rows="3" placeholder="Поделитесь впечатлением о нашем сервисе..."></textarea>
+                    <button id="submitCommentBtn" class="btn-primary" style="margin-top:0.5rem;">📝 Отправить отзыв</button>
+                </div>
+            </div>
+            
+            <div class="profile-card">
+                <h3><i class="fas fa-shopping-bag"></i> Мои заказы</h3>
+                <div id="ordersList">Загрузка...</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="authModal" class="modal">
+    <div class="modal-content">
+        <span class="close-modal" style="float:right;cursor:pointer;">&times;</span>
+        <h2 id="modalTitle"></h2>
+        <input type="email" id="authEmail" placeholder="Email">
+        <input type="text" id="authUsername" placeholder="Логин">
+        <input type="password" id="authPassword" placeholder="Пароль">
+        <div id="extraRegFields" style="display:none;">
+            <input type="password" id="confirmPassword" placeholder="Подтвердите пароль">
+        </div>
+        <button id="submitAuthBtn" class="btn-primary">Продолжить</button>
+    </div>
+</div>
+
+<script>
+    let currentUser = null;
+
+    async function apiCall(endpoint, options = {}) {
+        const res = await fetch(`/api${endpoint}`, {
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            ...options,
+            body: options.body ? JSON.stringify(options.body) : undefined
+        });
+        return res.json();
+    }
+
+    async function loadProfile() {
+        const data = await apiCall('/me');
+        currentUser = data.user;
+        
+        if (currentUser) {
+            document.getElementById('loggedIn').style.display = 'block';
+            document.getElementById('notLoggedIn').style.display = 'none';
+            document.getElementById('userName').innerText = currentUser.username;
+            document.getElementById('userEmail').innerText = currentUser.email || 'не указан';
+            document.getElementById('userSince').innerText = new Date().toLocaleDateString('ru-RU');
+            await loadOrders();
+        } else {
+            document.getElementById('loggedIn').style.display = 'none';
+            document.getElementById('notLoggedIn').style.display = 'block';
+        }
+    }
+
+    async function loadOrders() {
+        const data = await apiCall('/orders');
+        const orders = data.orders || [];
+        const container = document.getElementById('ordersList');
+        if (orders.length === 0) {
+            container.innerHTML = '<p>У вас пока нет заказов.</p>';
+            return;
+        }
+        container.innerHTML = orders.map(o => `
+            <div class="order-item">
+                <strong>Заказ #${o.id}</strong><br>
+                Сумма: ${o.total.toLocaleString()} €<br>
+                Дата: ${new Date(o.date).toLocaleString('ru-RU')}
+            </div>
+        `).join('');
+    }
+
+    async function addComment() {
+        const text = document.getElementById('commentText').value;
+        if (!text.trim()) return alert('Напишите отзыв');
+        const res = await apiCall('/comments/add', { method: 'POST', body: { text } });
+        if (res.success) {
+            alert('Спасибо за отзыв!');
+            document.getElementById('commentText').value = '';
+        } else {
+            alert(res.error || 'Ошибка');
+        }
+    }
+
+    // Auth modal
+    const modal = document.getElementById('authModal');
+    let authMode = 'login';
+    function openModal(mode) {
+        authMode = mode;
+        document.getElementById('modalTitle').innerText = mode === 'login' ? 'Вход' : 'Регистрация';
+        document.getElementById('extraRegFields').style.display = mode === 'register' ? 'block' : 'none';
+        modal.style.display = 'flex';
+    }
+    function closeModal() { modal.style.display = 'none'; }
+    document.querySelector('.close-modal')?.addEventListener('click', closeModal);
+    
+    document.getElementById('submitAuthBtn').onclick = async () => {
+        const email = document.getElementById('authEmail').value;
+        const username = document.getElementById('authUsername').value;
+        const password = document.getElementById('authPassword').value;
+        if (authMode === 'register') {
+            const confirm = document.getElementById('confirmPassword').value;
+            if (password !== confirm) return alert('Пароли не совпадают');
+            const res = await apiCall('/register', { method: 'POST', body: { email, username, password } });
+            if (res.success) { alert('Регистрация успешна! Войдите'); openModal('login'); }
+            else alert(res.error);
+        } else {
+            const res = await apiCall('/login', { method: 'POST', body: { login: email || username, password } });
+            if (res.success) { closeModal(); await loadProfile(); }
+            else alert('Неверные данные');
+        }
+    };
+    
+    document.getElementById('forceLoginBtn').onclick = () => openModal('login');
+    document.getElementById('submitCommentBtn').onclick = addComment;
+    
+    loadProfile();
+</script>
+<footer><p>© 2025 Passion Sure</p></footer>
+</body>
+</html>

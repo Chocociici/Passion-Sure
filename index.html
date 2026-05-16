@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Passion Sure | Итальянские авто</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #0a0a0a; color: #eaeaea; overflow-x: hidden; }
+        .animated-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; background: radial-gradient(circle at 30% 40%, rgba(212,175,55,0.08) 0%, #0a0a0a 70%); }
+        :root { --gold: #d4af37; --gold-dark: #b8960c; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 0 2rem; }
+        
+        .header {
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        .header .container { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+        .logo h1 { font-size: 1.6rem; font-weight: 800; background: linear-gradient(135deg, #fff, var(--gold), #fff); background-size: 200% auto; -webkit-background-clip: text; background-clip: text; color: transparent; animation: shine 3s linear infinite; }
+        @keyframes shine { 0% { background-position: 0% center; } 100% { background-position: 200% center; } }
+        
+        .nav-links { display: flex; gap: 1.8rem; align-items: center; flex-wrap: wrap; }
+        .nav-links a { color: #eaeaea; text-decoration: none; font-weight: 500; position: relative; transition: 0.3s; cursor: pointer; }
+        .nav-links a::after { content: ''; position: absolute; bottom: -5px; left: 0; width: 0; height: 2px; background: var(--gold); transition: width 0.3s ease; }
+        .nav-links a:hover::after, .nav-links a.active::after { width: 100%; }
+        .nav-links a:hover, .nav-links a.active { color: var(--gold); }
+        
+        .btn-outline { background: transparent; border: 1.5px solid var(--gold); padding: 0.4rem 1.2rem; border-radius: 2rem; color: var(--gold); cursor: pointer; transition: all 0.3s ease; }
+        .btn-outline:hover { background: var(--gold); color: #0a0a0a; transform: translateY(-2px); }
+        .btn-primary { background: linear-gradient(135deg, var(--gold), var(--gold-dark)); border: none; padding: 0.5rem 1.5rem; border-radius: 2rem; font-weight: 600; color: #0a0a0a; cursor: pointer; transition: all 0.3s ease; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 5px 25px rgba(212, 175, 55, 0.4); }
+        
+        .cart-icon { position: relative; cursor: pointer; }
+        .cart-count { position: absolute; top: -8px; right: -12px; background: var(--gold); color: #0a0a0a; font-size: 0.7rem; font-weight: 700; padding: 0.1rem 0.4rem; border-radius: 50%; }
+        
+        .swiper { width: 100%; border-radius: 1.5rem; margin: 2rem 0; }
+        .slide { position: relative; height: 550px; }
+        .slide img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.7s ease; }
+        .swiper-slide-active .slide img { transform: scale(1.05); }
+        .slide-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); padding: 3rem 2rem; transform: translateY(20px); opacity: 0; transition: all 0.5s ease; }
+        .swiper-slide-active .slide-overlay { transform: translateY(0); opacity: 1; }
+        .slide-overlay h2 { font-size: 2.5rem; font-weight: 700; }
+        
+        .section-title { font-size: 2rem; font-weight: 700; margin: 2rem 0 1.5rem; position: relative; display: inline-block; }
+        .section-title::after { content: ''; position: absolute; bottom: -8px; left: 0; width: 60%; height: 3px; background: linear-gradient(90deg, var(--gold), transparent); }
+        
+        .catalog-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 2rem; margin: 1.5rem 0; }
+        
+        .card {
+            background: rgba(17, 17, 17, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 1.2rem;
+            overflow: hidden;
+            border: 1px solid rgba(212, 175, 55, 0.15);
+            transition: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            cursor: pointer;
+        }
+        .card:hover { transform: translateY(-12px); border-color: var(--gold); box-shadow: 0 20px 40px rgba(212, 175, 55, 0.15); }
+        .card-img { height: 220px; overflow: hidden; position: relative; }
+        .card-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
+        .card:hover .card-img img { transform: scale(1.08); }
+        .card-badge { position: absolute; top: 1rem; right: 1rem; background: var(--gold); color: #0a0a0a; padding: 0.3rem 0.8rem; border-radius: 2rem; font-size: 0.7rem; font-weight: 600; }
+        .card-info { padding: 1.2rem; }
+        .price { color: var(--gold); font-weight: 700; font-size: 1.3rem; margin: 0.5rem 0; }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.97);
+            backdrop-filter: blur(15px);
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .modal-content {
+            background: #111;
+            border-radius: 1.5rem;
+            padding: 2rem;
+            width: 90%;
+            max-width: 550px;
+            max-height: 85vh;
+            overflow-y: auto;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            animation: slideUp 0.4s ease;
+        }
+        @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .close-modal { float: right; font-size: 1.8rem; cursor: pointer; transition: 0.2s; }
+        .close-modal:hover { color: var(--gold); transform: rotate(90deg); }
+        
+        input, textarea, select { background: #1a1a1a; border: 1px solid #333; padding: 0.8rem; border-radius: 0.8rem; color: white; font-family: inherit; width: 100%; margin-bottom: 0.8rem; }
+        input:focus, textarea:focus, select:focus { outline: none; border-color: var(--gold); }
+        
+        .rating { color: var(--gold); font-size: 1.2rem; }
+        .filter-bar { display: flex; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap; }
+        .filter-bar input, .filter-bar select { width: auto; min-width: 180px; margin: 0; }
+        
+        footer { text-align: center; padding: 2rem; border-top: 1px solid rgba(212, 175, 55, 0.2); margin-top: 3rem; color: #666; font-size: 0.8rem; }
+        @media (max-width: 768px) { .container { padding: 0 1rem; } .slide { height: 350px; } .filter-bar { flex-direction: column; } .filter-bar input, .filter-bar select { width: 100%; } }
+    </style>
+</head>
+<body>
+    <div class="animated-bg"></div>
+    <div class="header">
+        <div class="container">
+            <div class="logo"><h1>PASSION SURE</h1></div>
+            <div class="nav-links" id="navLinks"></div>
+            <div id="authArea"></div>
+        </div>
+    </div>
+    <div class="container"><div id="content"></div></div>
+    <footer><p>© 2025 Passion Sure — бескомпромиссная страсть к итальянскому стилю</p></footer>
+    <div id="modal" class="modal"><div class="modal-content"><span class="close-modal">&times;</span><div id="modalBody"></div></div></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script>
+        let currentUser = null, currentPage = 'home', cartItems = [], allProducts = [];
+        
+        async function apiCall(endpoint, options = {}) {
+            const res = await fetch(`/api${endpoint}`, { headers: { 'Content-Type': 'application/json' }, credentials: 'include', ...options, body: options.body ? JSON.stringify(options.body) : undefined });
+            return res.json();
+        }
+        
+        async function loadCart() { if (!currentUser) { cartItems = []; updateCartUI(); return; } const data = await apiCall('/cart'); cartItems = data.items || []; updateCartUI(); }
+        function updateCartUI() { const total = cartItems.reduce((s, i) => s + i.quantity, 0); const badge = document.getElementById('cartCount'); if (badge) badge.innerText = total; }
+        async function addToCart(productId) { if (!currentUser) { alert('Войдите'); showAuthModal('login'); return; } const res = await apiCall('/cart/add', { method: 'POST', body: { productId, quantity: 1 } }); if (res.success) { await loadCart(); alert('Добавлено в корзину'); renderPage(); } else alert(res.error); }
+        async function removeFromCart(productId) { await apiCall('/cart/remove', { method: 'POST', body: { productId } }); await loadCart(); renderPage(); }
+        async function checkout() { if (!cartItems.length) return alert('Корзина пуста'); const res = await apiCall('/cart/checkout', { method: 'POST' }); if (res.success) { alert('Заказ оформлен! Спасибо!'); await loadCart(); renderPage(); } else alert(res.error); }
+        
+        async function checkAuth() { const data = await apiCall('/me'); currentUser = data.user; await loadCart(); await loadProducts(); renderHeader(); renderPage(); }
+        
+        async function loadProducts() { const data = await apiCall('/products'); allProducts = data.products || []; }
+        
+        function renderHeader() {
+            const navContainer = document.getElementById('navLinks');
+            const authContainer = document.getElementById('authArea');
+            navContainer.innerHTML = `<a data-page="home">Главная</a><a data-page="catalog">Каталог</a><a data-page="promotions">Акции</a><a data-page="services">Услуги</a><a data-page="profile">Профиль</a><div class="cart-icon" onclick="showCart()"><i class="fas fa-shopping-cart"></i><span id="cartCount" class="cart-count">0</span></div>`;
+            if (currentUser) {
+                authContainer.innerHTML = `<div style="display:flex; gap:1rem; align-items:center;"><span style="color:var(--gold);">${currentUser.username}</span><button class="btn-outline" id="logoutBtn">Выйти</button></div>`;
+                document.getElementById('logoutBtn')?.addEventListener('click', async () => { await apiCall('/logout', { method: 'POST' }); currentUser = null; renderHeader(); renderPage(); });
+            } else {
+                authContainer.innerHTML = `<button class="btn-outline" id="showLoginBtn">Вход</button><button class="btn-primary" id="showRegisterBtn">Регистрация</button>`;
+                document.getElementById('showLoginBtn')?.addEventListener('click', () => showAuthModal('login'));
+                document.getElementById('showRegisterBtn')?.addEventListener('click', () => showAuthModal('register'));
+            }
+            document.querySelectorAll('[data-page]').forEach(link => link.addEventListener('click', () => { currentPage = link.dataset.page; document.querySelectorAll('[data-page]').forEach(l => l.classList.remove('active')); link.classList.add('active'); renderPage(); }));
+        }
+        
+        function showAuthModal(mode) {
+            const modalBody = document.getElementById('modalBody');
+            if (mode === 'login') {
+                modalBody.innerHTML = `<h2 style="margin-bottom:1.5rem;">Вход</h2><input type="text" id="loginUsername" placeholder="Логин"><input type="password" id="loginPassword" placeholder="Пароль"><button id="doLoginBtn" class="btn-primary" style="width:100%;">Войти</button>`;
+                document.getElementById('doLoginBtn').onclick = async () => { const res = await apiCall('/login', { method: 'POST', body: { username: document.getElementById('loginUsername').value, password: document.getElementById('loginPassword').value } }); if (res.success) { closeModal(); await checkAuth(); } else alert('Неверные данные'); };
+            } else {
+                modalBody.innerHTML = `<h2 style="margin-bottom:1.5rem;">Регистрация</h2><input type="text" id="regUsername" placeholder="Логин"><input type="password" id="regPassword" placeholder="Пароль"><input type="password" id="regConfirm" placeholder="Подтвердите пароль"><input type="email" id="regEmail" placeholder="Email"><input type="tel" id="regPhone" placeholder="Телефон"><div style="margin:1rem 0;"><label><input type="checkbox" id="agreeTerms"> Я принимаю <a href="#" id="termsLink" style="color:var(--gold);">условия соглашения</a></label></div><button id="doRegisterBtn" class="btn-primary" style="width:100%;">Зарегистрироваться</button>`;
+                document.getElementById('termsLink').onclick = (e) => { e.preventDefault(); alert('Пользовательское соглашение'); };
+                document.getElementById('doRegisterBtn').onclick = async () => { if (!document.getElementById('agreeTerms').checked) return alert('Примите условия'); if (document.getElementById('regPassword').value !== document.getElementById('regConfirm').value) return alert('Пароли не совпадают'); const res = await apiCall('/register', { method: 'POST', body: { username: document.getElementById('regUsername').value, password: document.getElementById('regPassword').value, email: document.getElementById('regEmail').value, phone: document.getElementById('regPhone').value } }); if (res.success) { alert('Регистрация успешна! Войдите'); closeModal(); showAuthModal('login'); } else alert(res.error); };
+            }
+            document.getElementById('modal').style.display = 'flex';
+            document.querySelector('.close-modal').onclick = closeModal;
+        }
+        
+        function closeModal() { document.getElementById('modal').style.display = 'none'; }
+        
+        function showCart() {
+            const modalBody = document.getElementById('modalBody');
+            if (!cartItems.length) modalBody.innerHTML = `<h2>Корзина пуста</h2><button class="btn-primary" onclick="closeModal()">Закрыть</button>`;
+            else modalBody.innerHTML = `<h2>Корзина</h2>${cartItems.map(i => `<div style="display:flex; justify-content:space-between; padding:0.8rem 0; border-bottom:1px solid #333;"><div><strong>${i.name}</strong><br>${i.price}€ x ${i.quantity}</div><button class="btn-outline" onclick="removeFromCart(${i.product_id}); closeModal();">Удалить</button></div>`).join('')}<div style="margin-top:1rem;"><strong>Итого: ${cartItems.reduce((s,i)=>s + i.price * i.quantity, 0).toLocaleString()}€</strong></div><button class="btn-primary" onclick="checkout(); closeModal();" style="width:100%; margin-top:1rem;">Оформить заказ</button>`;
+            document.getElementById('modal').style.display = 'flex';
+            document.querySelector('.close-modal').onclick = closeModal;
+        }
+        
+        async function renderPage() {
+            const content = document.getElementById('content');
+            
+            if (currentPage === 'home') {
+                const promos = await apiCall('/promotions');
+                content.innerHTML = `<div class="swiper mySwiper"><div class="swiper-wrapper"><div class="swiper-slide"><div class="slide"><img src="https://www.amalgamcollection.com/cdn/shop/files/DSCF0853WIDEEDIT_2000x850_crop_center.jpg"><div class="slide-overlay"><h2>Ferrari Daytona SP3</h2><p>V12 — 840 л.с.</p></div></div></div><div class="swiper-slide"><div class="slide"><img src="https://hips.hearstapps.com/hmg-prod/images/2024-lamborghini-revuelto-lightning-lap-2025-378-67ae462c26ed6.jpg"><div class="slide-overlay"><h2>Lamborghini Revuelto</h2><p>V12 гибрид — 1015 л.с.</p></div></div></div></div><div class="swiper-pagination"></div><div class="swiper-button-next"></div><div class="swiper-button-prev"></div></div><h2 class="section-title">Акции</h2><div class="catalog-grid">${promos.promotions.map(p => `<div class="card"><div class="card-info"><h3>${p.title}</h3><p>${p.description}</p><p style="color:var(--gold);">Скидка ${p.discount}% до ${p.end_date}</p></div></div>`).join('')}</div><h2 class="section-title">Популярные модели</h2><div class="catalog-grid" id="homeGrid"></div>`;
+                document.getElementById('homeGrid').innerHTML = allProducts.slice(0,3).map(p => `<div class="card" onclick="showProductPage(${p.id})"><div class="card-img"><img src="${p.images?.split(',')[0]}"><span class="card-badge">${p.category}</span></div><div class="card-info"><h3>${p.name}</h3><p class="price">${p.price.toLocaleString()}€</p></div></div>`).join('');
+                new Swiper('.mySwiper', { loop: true, navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' }, pagination: { el: '.swiper-pagination', clickable: true }, autoplay: { delay: 4500 } });
+            }
+            else if (currentPage === 'catalog') {
+                const cats = await apiCall('/categories');
+                content.innerHTML = `<h2 class="section-title">Каталог</h2><div class="filter-bar"><input type="text" id="searchInput" placeholder="🔍 Поиск..."><select id="catFilter"><option value="all">Все категории</option>${cats.categories.map(c => `<option value="${c}">${c}</option>`).join('')}</select><select id="sortFilter"><option value="default">Сортировка</option><option value="price-asc">Цена ↑</option><option value="price-desc">Цена ↓</option></select></div><div class="catalog-grid" id="catalogGrid"></div>`;
+                const renderCatalog = () => {
+                    let filtered = [...allProducts];
+                    const search = document.getElementById('searchInput')?.value.toLowerCase() || '';
+                    const category = document.getElementById('catFilter')?.value || 'all';
+                    const sort = document.getElementById('sortFilter')?.value;
+                    if (search) filtered = filtered.filter(p => p.name.toLowerCase().includes(search));
+                    if (category !== 'all') filtered = filtered.filter(p => p.category === category);
+                    if (sort === 'price-asc') filtered.sort((a,b) => a.price - b.price);
+                    if (sort === 'price-desc') filtered.sort((a,b) => b.price - a.price);
+                    document.getElementById('catalogGrid').innerHTML = filtered.map(p => `<div class="card" onclick="showProductPage(${p.id})"><div class="card-img"><img src="${p.images?.split(',')[0]}"><span class="card-badge">${p.category}</span></div><div class="card-info"><h3>${p.name}</h3><p class="price">${p.price.toLocaleString()}€</p></div></div>`).join('');
+                };
+                document.getElementById('searchInput')?.addEventListener('input', renderCatalog);
+                document.getElementById('catFilter')?.addEventListener('change', renderCatalog);
+                document.getElementById('sortFilter')?.addEventListener('change', renderCatalog);
+                renderCatalog();
+            }
+            else if (currentPage === 'promotions') { const data = await apiCall('/promotions'); content.innerHTML = `<h2 class="section-title">Акции</h2><div class="catalog-grid">${data.promotions.map(p => `<div class="card"><div class="card-info"><h3>${p.title}</h3><p>${p.description}</p><p style="color:var(--gold);">Скидка ${p.discount}% до ${p.end_date}</p></div></div>`).join('')}</div>`; }
+            else if (currentPage === 'services') { const data = await apiCall('/services'); content.innerHTML = `<h2 class="section-title">Услуги</h2><div class="catalog-grid">${data.services.map(s => `<div class="card"><div class="card-info"><h3>${s.name} ${s.image}</h3><p>${s.description}</p><p class="price">${s.price}€</p><button class="btn-primary" onclick="alert('Запись оформлена!')">Записаться</button></div></div>`).join('')}</div>`; }
+            else if (currentPage === 'profile') {
+                if (!currentUser) { 
+                    content.innerHTML = `<div style="text-align:center; padding:4rem;"><h2>Войдите в профиль</h2><button class="btn-primary" id="forceLoginBtn">Войти</button></div>`; 
+                    document.getElementById('forceLoginBtn')?.addEventListener('click', () => showAuthModal('login')); 
+                    return; 
+                }
+                
+                const myProducts = await apiCall('/my-products');
+                const orders = await apiCall('/orders');
+                const sellers = await apiCall('/sellers');
+                
+                content.innerHTML = `
+                    <h2 class="section-title">Мой профиль</h2>
+                    <div style="background:#111; border-radius:1.5rem; padding:1.5rem; margin-bottom:2rem;">
+                        <p><strong>👤 ${currentUser.username}</strong></p>
+                        <p>📧 ${currentUser.email || 'не указан'}</p>
+                        <p>📞 ${currentUser.phone || 'не указан'}</p>
+                    </div>
+                    
+                    <div style="background:#111; border-radius:1.5rem; padding:1.5rem; margin-bottom:2rem;">
+                        <h3 style="margin-bottom:1rem; color:var(--gold);">📢 Продать свой автомобиль</h3>
+                        <input type="text" id="adName" placeholder="Марка и модель">
+                        <input type="number" id="adPrice" placeholder="Цена €">
+                        <input type="number" id="adStock" placeholder="Количество (1)" value="1">
+                        <input type="text" id="adCategory" placeholder="Категория (Суперкары, Спорткары...)">
+                        <input type="text" id="adImages" placeholder="Ссылки на фото (через запятую)">
+                        <textarea id="adDesc" placeholder="Описание автомобиля (год, пробег, состояние...)" rows="3"></textarea>
+                        <button id="publishAdBtn" class="btn-primary">📢 Опубликовать объявление</button>
+                    </div>
+                    
+                    <h3>Мои объявления</h3>
+                    <div class="catalog-grid" id="myAdsGrid"></div>
+                    
+                    <h3>Мои заказы</h3>
+                    <div id="ordersList">${orders.orders.length ? orders.orders.map(o => `<div style="background:#1a1a1a; padding:1rem; border-radius:1rem; margin-bottom:1rem;"><strong>Заказ #${o.id}</strong><br>${o.total.toLocaleString()}€<br>${new Date(o.date).toLocaleString()}</div>`).join('') : '<p>Нет заказов</p>'}</div>
+                    
+                    <h3>Продавцы</h3>
+                    <div id="sellersList"></div>
+                    
+                    <div id="chatArea" style="margin-top:2rem; display:none; background:#111; border-radius:1rem; padding:1rem;">
+                        <h3>Чат с <span id="chatWith"></span></h3>
+                        <div id="chatMessages" style="background:#1a1a1a; border-radius:1rem; padding:1rem; height:300px; overflow-y:auto;"></div>
+                        <div style="display:flex; gap:0.5rem; margin-top:1rem;"><input type="text" id="chatInput" placeholder="Сообщение..." style="flex:1; margin:0;"><button id="sendChatBtn" class="btn-primary">Отправить</button></div>
+                    </div>
+                `;
+                
+                const renderMyAds = () => {
+                    const grid = document.getElementById('myAdsGrid');
+                    if (myProducts.products && myProducts.products.length) {
+                        grid.innerHTML = myProducts.products.map(p => `
+                            <div class="card" onclick="showProductPage(${p.id})">
+                                <div class="card-img">${p.images?.split(',')[0] ? `<img src="${p.images.split(',')[0]}">` : '<div style="font-size:3rem; display:flex; align-items:center; justify-content:center; height:100%;">🏎️</div>'}</div>
+                                <div class="card-info">
+                                    <h3>${p.name}</h3>
+                                    <p class="price">${p.price.toLocaleString()}€</p>
+                                    <button class="btn-outline" onclick="event.stopPropagation(); deleteMyAd(${p.id})" style="background:#c0392b; color:white; border:none; margin-top:0.5rem;">🗑 Удалить</button>
+                                </div>
+                            </div>
+                        `).join('');
+                    } else {
+                        grid.innerHTML = '<p style="grid-column:1/-1; text-align:center;">У вас пока нет объявлений. Добавьте свой автомобиль!</p>';
+                    }
+                };
+                renderMyAds();
+                
+                document.getElementById('publishAdBtn').onclick = async () => {
+    const name = document.getElementById('adName').value.trim();
+    const price = parseFloat(document.getElementById('adPrice').value);
+    const stock = parseInt(document.getElementById('adStock').value) || 1;
+    const category = document.getElementById('adCategory').value.trim();
+    const images = document.getElementById('adImages').value.trim();
+    const description = document.getElementById('adDesc').value.trim();
+    
+    console.log('Отправляем:', { name, price, stock, category, images, description });
+    
+    if (!name) {
+        alert('Введите название автомобиля');
+        return;
+    }
+    if (isNaN(price) || price <= 0) {
+        alert('Введите корректную цену');
+        return;
+    }
+    
+    const res = await apiCall('/products/add', { 
+        method: 'POST', 
+        body: { name, price, stock, category, images, description } 
+    });
+    
+    console.log('Ответ сервера:', res);
+    
+    if (res.success) { 
+        alert('✅ Объявление опубликовано!');
+        document.getElementById('adName').value = '';
+        document.getElementById('adPrice').value = '';
+        document.getElementById('adCategory').value = '';
+        document.getElementById('adImages').value = '';
+        document.getElementById('adDesc').value = '';
+        await loadProducts();
+        renderPage();
+    } else {
+        alert('❌ Ошибка: ' + (res.error || 'Неизвестная ошибка'));
+    }
+};
+                
+                window.deleteMyAd = async (id) => {
+                    if (confirm('Удалить объявление?')) {
+                        const res = await apiCall(`/products/${id}`, { method: 'DELETE' });
+                        if (res.success) {
+                            await loadProducts();
+                            renderPage();
+                        } else alert('Ошибка удаления');
+                    }
+                };
+                
+                const sellersList = document.getElementById('sellersList');
+                sellersList.innerHTML = sellers.sellers.map(s => `
+                    <div style="background:#1a1a1a; padding:1rem; border-radius:1rem; margin-bottom:1rem; display:flex; justify-content:space-between; align-items:center;">
+                        <div><strong>${s.username}</strong><div class="rating">⭐ ${s.rating?.toFixed(1) || 'Новый'} (${s.reviews_count || 0} отзывов)</div></div>
+                        <button class="btn-outline" onclick="viewSellerProfile(${s.id})">Профиль</button>
+                    </div>
+                `).join('');
+                
+                window.viewSellerProfile = async (sellerId) => {
+                    const seller = await apiCall(`/seller/${sellerId}`);
+                    const reviews = await apiCall(`/reviews/${sellerId}`);
+                    const modalBody = document.getElementById('modalBody');
+                    modalBody.innerHTML = `
+                        <h2>${seller.seller.username}</h2>
+                        <div class="rating">⭐ ${seller.seller.rating?.toFixed(1) || 'Нет оценок'} (${seller.seller.reviews_count || 0} отзывов)</div>
+                        <p>📧 ${seller.seller.email || 'не указан'}</p>
+                        <p>📞 ${seller.seller.phone || 'не указан'}</p>
+                        <h3 style="margin-top:1rem;">Отзывы</h3>
+                        ${reviews.reviews.length ? reviews.reviews.map(r => `<div style="background:#1a1a1a; padding:1rem; border-radius:1rem; margin-top:0.5rem;"><div class="rating">${'⭐'.repeat(r.rating)}</div><p>${r.comment}</p><small>${new Date(r.date).toLocaleString()}</small></div>`).join('') : '<p>Пока нет отзывов</p>'}
+                        <h3 style="margin-top:1rem;">Оставить отзыв</h3>
+                        <select id="ratingSelect"><option value="5">5 - Отлично</option><option value="4">4 - Хорошо</option><option value="3">3 - Средне</option><option value="2">2 - Плохо</option><option value="1">1 - Ужасно</option></select>
+                        <textarea id="reviewText" placeholder="Ваш отзыв..." rows="3"></textarea>
+                        <button id="submitReviewBtn" class="btn-primary">Отправить отзыв</button>
+                        <button class="btn-outline" onclick="startChat(${seller.seller.id}, '${seller.seller.username}')" style="margin-top:1rem; width:100%;">💬 Написать сообщение</button>
+                    `;
+                    document.getElementById('submitReviewBtn').onclick = async () => {
+                        const rating = parseInt(document.getElementById('ratingSelect').value);
+                        const comment = document.getElementById('reviewText').value;
+                        if (!comment.trim()) return alert('Напишите отзыв');
+                        await apiCall('/reviews/add', { method: 'POST', body: { seller_id: sellerId, rating, comment } });
+                        alert('Спасибо за отзыв!');
+                        closeModal();
+                    };
+                    document.getElementById('modal').style.display = 'flex';
+                    document.querySelector('.close-modal').onclick = closeModal;
+                };
+                
+                window.startChat = async (userId, username) => {
+                    document.getElementById('chatArea').style.display = 'block';
+                    document.getElementById('chatWith').innerText = username;
+                    const msgs = await apiCall(`/messages/${userId}`);
+                    const container = document.getElementById('chatMessages');
+                    container.innerHTML = msgs.messages.map(m => `<div style="text-align:${m.from_user === currentUser.id ? 'right' : 'left'}; margin:0.5rem 0;"><span style="background:${m.from_user === currentUser.id ? '#d4af37' : '#333'}; color:${m.from_user === currentUser.id ? 'black' : 'white'}; padding:0.5rem 1rem; border-radius:1rem; display:inline-block;">${m.message}</span><br><small>${new Date(m.date).toLocaleString()}</small></div>`).join('');
+                    document.getElementById('sendChatBtn').onclick = async () => {
+                        const msg = document.getElementById('chatInput').value;
+                        if (!msg.trim()) return;
+                        await apiCall('/messages/send', { method: 'POST', body: { to_user: userId, message: msg } });
+                        document.getElementById('chatInput').value = '';
+                        startChat(userId, username);
+                    };
+                };
+            }
+            
+            window.showProductPage = async (id) => {
+                const prod = await apiCall(`/products/${id}`); const p = prod.product; const images = p.images?.split(',') || [];
+                content.innerHTML = `<button onclick="renderPage()" style="background:none; border:none; color:var(--gold); cursor:pointer;">← Назад</button><div style="background:#111; border-radius:1.5rem; padding:2rem; margin-top:1rem;"><div class="product-gallery" style="display:flex; gap:1rem; overflow-x:auto; margin-bottom:1rem;">${images.map(img => `<img src="${img}" style="width:100px;height:100px;object-fit:cover;border-radius:0.5rem;cursor:pointer;" onclick="document.getElementById('mainImage').src=this.src">`).join('')}</div><img id="mainImage" src="${images[0] || ''}" style="width:100%; height:400px; object-fit:cover; border-radius:1rem; margin-bottom:1rem;"><h2>${p.name}</h2><p class="price">${p.price.toLocaleString()}€</p><p>${p.description}</p><button class="btn-primary" onclick="addToCart(${p.id})">🛒 В корзину</button><button class="btn-outline" onclick="startChatFromProduct(${p.seller_id}, ${p.id})" style="margin-left:0.5rem;">💬 Спросить продавца</button></div>`;
+                window.startChatFromProduct = (sellerId, productId) => {
+                    const modalBody = document.getElementById('modalBody');
+                    modalBody.innerHTML = `<h2>Сообщение продавцу</h2><textarea id="msgText" rows="3" placeholder="Ваш вопрос..."></textarea><button id="sendMsgBtn" class="btn-primary">Отправить</button>`;
+                    document.getElementById('sendMsgBtn').onclick = async () => {
+                        const msg = document.getElementById('msgText').value;
+                        if (!msg.trim()) return;
+                        await apiCall('/messages/send', { method: 'POST', body: { to_user: sellerId, product_id: productId, message: msg } });
+                        alert('Сообщение отправлено!');
+                        closeModal();
+                    };
+                    document.getElementById('modal').style.display = 'flex';
+                    document.querySelector('.close-modal').onclick = closeModal;
+                };
+            };
+        }
+        
+        window.addToCart = addToCart; window.removeFromCart = removeFromCart; window.checkout = checkout; window.showCart = showCart; window.closeModal = closeModal;
+        checkAuth();
+    </script>
+</body>
+</html>

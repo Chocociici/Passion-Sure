@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Каталог | Passion Sure</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #0a0a0a; color: #eaeaea; }
+        :root { --gold: #d4af37; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 0 2rem; }
+        
+        /* Шапка как в index */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 0;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .logo h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #fff, var(--gold));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .logo p { font-size: 0.7rem; letter-spacing: 2px; color: var(--gold); }
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .nav-links a {
+            color: #eaeaea;
+            text-decoration: none;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+        .nav-links a:hover, .nav-links .active { color: var(--gold); }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--gold);
+            padding: 0.5rem 1.2rem;
+            border-radius: 2rem;
+            color: var(--gold);
+            cursor: pointer;
+            font-weight: 500;
+        }
+        .btn-primary {
+            background: var(--gold);
+            border: none;
+            padding: 0.5rem 1.5rem;
+            border-radius: 2rem;
+            font-weight: 600;
+            color: #0a0a0a;
+            cursor: pointer;
+        }
+        
+        /* Каталог */
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin: 2rem 0 1rem;
+            border-left: 4px solid var(--gold);
+            padding-left: 1rem;
+        }
+        .filter-bar {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        .search-input {
+            flex: 1;
+            padding: 0.8rem 1rem;
+            border-radius: 2rem;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            color: white;
+            font-family: inherit;
+        }
+        .category-filter {
+            padding: 0.8rem 1rem;
+            border-radius: 2rem;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            color: white;
+            cursor: pointer;
+        }
+        .catalog-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+        .product-card {
+            background: #111;
+            border-radius: 1.5rem;
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: 1px solid #2c2c2c;
+        }
+        .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(212, 175, 55, 0.15);
+            border-color: var(--gold);
+        }
+        .product-img {
+            height: 220px;
+            background: #1a1a1a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .product-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .product-img div {
+            font-size: 4rem;
+        }
+        .product-info {
+            padding: 1.2rem;
+        }
+        .product-info h3 {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+        .price {
+            color: var(--gold);
+            font-weight: 700;
+            font-size: 1.3rem;
+        }
+        .category-badge {
+            display: inline-block;
+            background: rgba(212, 175, 55, 0.2);
+            padding: 0.2rem 0.6rem;
+            border-radius: 1rem;
+            font-size: 0.7rem;
+            margin: 0.5rem 0;
+        }
+        .cart-bar {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #1a1a1a;
+            padding: 0.8rem 1.2rem;
+            border-radius: 3rem;
+            border: 1px solid var(--gold);
+            display: flex;
+            gap: 1rem;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(10px);
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+        .modal-content {
+            background: #1a1a1a;
+            border-radius: 2rem;
+            padding: 2rem;
+            width: 90%;
+            max-width: 450px;
+            border: 1px solid var(--gold);
+        }
+        .modal-content input {
+            width: 100%;
+            margin: 0.5rem 0;
+            padding: 0.8rem;
+            border-radius: 1rem;
+            background: #222;
+            border: 1px solid #444;
+            color: white;
+        }
+        footer {
+            text-align: center;
+            padding: 2rem;
+            border-top: 1px solid #222;
+            margin-top: 3rem;
+        }
+        @media (max-width: 768px) {
+            .filter-bar { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="navbar">
+        <div class="logo">
+            <h1>PASSION SURE</h1>
+            <p>ITALIAN AUTOMOTIVE MAESTRO</p>
+        </div>
+        <div class="nav-links">
+            <a href="index.html">Главная</a>
+            <a href="catalog.html" class="active">Каталог</a>
+            <a href="profile.html">Личный кабинет</a>
+        </div>
+    </div>
+
+    <h2 class="section-title">Наши автомобили и аксессуары</h2>
+    
+    <div class="filter-bar">
+        <input type="text" id="searchInput" class="search-input" placeholder="🔍 Поиск по названию...">
+        <select id="categorySelect" class="category-filter">
+            <option value="all">Все категории</option>
+        </select>
+        <select id="sortSelect" class="category-filter">
+            <option value="default">Сортировка</option>
+            <option value="price-asc">Цена ↑</option>
+            <option value="price-desc">Цена ↓</option>
+            <option value="name">Название А-Я</option>
+        </select>
+    </div>
+
+    <div id="catalogContainer" class="catalog-grid">Загрузка...</div>
+</div>
+
+<div id="cartBar" class="cart-bar" style="display: none;">
+    <span>🛒 <span id="cartTotalItems">0</span> товаров</span>
+    <button id="viewCartBtn" class="btn-primary">Оформить</button>
+</div>
+
+<div id="authModal" class="modal">
+    <div class="modal-content">
+        <span class="close-modal" style="float:right;cursor:pointer;">&times;</span>
+        <h2 id="modalTitle">Вход</h2>
+        <input type="email" id="authEmail" placeholder="Email">
+        <input type="text" id="authUsername" placeholder="Логин">
+        <input type="password" id="authPassword" placeholder="Пароль">
+        <div id="extraRegFields" style="display:none;">
+            <input type="password" id="confirmPassword" placeholder="Подтвердите пароль">
+        </div>
+        <button id="submitAuthBtn" class="btn-primary">Продолжить</button>
+    </div>
+</div>
+
+<script>
+    let currentUser = null;
+    let cart = [];
+    let allProducts = [];
+    let categories = [];
+
+    async function apiCall(endpoint, options = {}) {
+        const res = await fetch(`/api${endpoint}`, {
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            ...options,
+            body: options.body ? JSON.stringify(options.body) : undefined
+        });
+        return res.json();
+    }
+
+    async function loadCart() {
+        if (!currentUser) { cart = []; updateCartUI(); return; }
+        const data = await apiCall('/cart');
+        cart = data.items || [];
+        updateCartUI();
+    }
+
+    function updateCartUI() {
+        const total = cart.reduce((s, i) => s + i.quantity, 0);
+        document.getElementById('cartTotalItems').innerText = total;
+        document.getElementById('cartBar').style.display = total > 0 ? 'flex' : 'none';
+    }
+
+    async function addToCart(productId) {
+        if (!currentUser) { alert('Войдите в аккаунт'); openModal('login'); return; }
+        const res = await apiCall('/cart/add', { method: 'POST', body: { productId, quantity: 1 } });
+        if (res.success) { await loadCart(); renderCatalog(); alert('Товар добавлен в корзину'); }
+        else alert(res.error);
+    }
+
+    async function removeFromCart(productId) {
+        const res = await apiCall('/cart/remove', { method: 'POST', body: { productId } });
+        if (res.success) { await loadCart(); renderCatalog(); }
+    }
+
+    async function loadProducts() {
+        const data = await apiCall('/products');
+        allProducts = data.products || [];
+        renderCatalog();
+    }
+
+    async function loadCategories() {
+        const data = await apiCall('/categories');
+        categories = data.categories || [];
+        const select = document.getElementById('categorySelect');
+        categories.forEach(cat => {
+            const option = document.createElement('option');
+            option.value = cat;
+            option.textContent = cat;
+            select.appendChild(option);
+        });
+    }
+
+    function renderCatalog() {
+        let filtered = [...allProducts];
+        const search = document.getElementById('searchInput')?.value.toLowerCase() || '';
+        const category = document.getElementById('categorySelect')?.value || 'all';
+        
+        if (search) filtered = filtered.filter(p => p.name.toLowerCase().includes(search));
+        if (category !== 'all') filtered = filtered.filter(p => p.category === category);
+        
+        const sort = document.getElementById('sortSelect')?.value;
+        if (sort === 'price-asc') filtered.sort((a,b) => a.price - b.price);
+        if (sort === 'price-desc') filtered.sort((a,b) => b.price - a.price);
+        if (sort === 'name') filtered.sort((a,b) => a.name.localeCompare(b.name));
+        
+        const container = document.getElementById('catalogContainer');
+        if (filtered.length === 0) {
+            container.innerHTML = '<p style="text-align:center; padding:3rem;">🔍 Ничего не найдено</p>';
+            return;
+        }
+        
+        container.innerHTML = filtered.map(p => {
+            const inCart = cart.find(i => i.product_id === p.id);
+            return `
+                <div class="product-card">
+                    <div class="product-img">
+                        ${p.image_url ? `<img src="${p.image_url}" alt="${p.name}" onerror="this.style.display='none'">` : `<div>${p.icon || '🏎️'}</div>`}
+                    </div>
+                    <div class="product-info">
+                        <span class="category-badge">${p.category || 'Аксессуары'}</span>
+                        <h3>${p.name}</h3>
+                        <p class="price">${p.price.toLocaleString()} €</p>
+                        <p style="font-size:0.8rem; color:#aaa; margin:0.5rem 0;">${p.description || ''}</p>
+                        <p style="font-size:0.8rem;">${p.stock > 0 ? `✅ В наличии: ${p.stock}` : '❌ Нет в наличии'}</p>
+                        ${p.stock > 0 ? `
+                            <button class="btn-primary" onclick="addToCart(${p.id})" style="margin-top:0.5rem;">🛒 В корзину</button>
+                            ${inCart ? `<button class="btn-outline" onclick="removeFromCart(${p.id})" style="margin-top:0.5rem; margin-left:0.5rem;">🗑 Убрать</button>` : ''}
+                        ` : '<button class="btn-outline" disabled style="margin-top:0.5rem;">Нет в наличии</button>'}
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    async function checkout() {
+        if (cart.length === 0) return alert('Корзина пуста');
+        const res = await apiCall('/cart/checkout', { method: 'POST' });
+        if (res.success) { alert('✅ Заказ оформлен! Спасибо за покупку!'); await loadCart(); renderCatalog(); }
+        else alert(res.error);
+    }
+
+    // Auth modal
+    const modal = document.getElementById('authModal');
+    let authMode = 'login';
+    function openModal(mode) {
+        authMode = mode;
+        document.getElementById('modalTitle').innerText = mode === 'login' ? 'Вход' : 'Регистрация';
+        document.getElementById('extraRegFields').style.display = mode === 'register' ? 'block' : 'none';
+        modal.style.display = 'flex';
+    }
+    function closeModal() { modal.style.display = 'none'; }
+    document.querySelector('.close-modal')?.addEventListener('click', closeModal);
+    
+    document.getElementById('submitAuthBtn').onclick = async () => {
+        const email = document.getElementById('authEmail').value;
+        const username = document.getElementById('authUsername').value;
+        const password = document.getElementById('authPassword').value;
+        if (authMode === 'register') {
+            const confirm = document.getElementById('confirmPassword').value;
+            if (password !== confirm) return alert('Пароли не совпадают');
+            const res = await apiCall('/register', { method: 'POST', body: { email, username, password } });
+            if (res.success) { alert('Регистрация успешна! Войдите'); openModal('login'); }
+            else alert(res.error);
+        } else {
+            const res = await apiCall('/login', { method: 'POST', body: { login: email || username, password } });
+            if (res.success) { closeModal(); await checkAuth(); }
+            else alert('Неверные данные');
+        }
+    };
+    
+    async function checkAuth() {
+        const data = await apiCall('/me');
+        currentUser = data.user;
+        await loadCart();
+        await loadProducts();
+        await loadCategories();
+    }
+    
+    document.getElementById('viewCartBtn').onclick = checkout;
+    document.getElementById('searchInput')?.addEventListener('input', () => renderCatalog());
+    document.getElementById('categorySelect')?.addEventListener('change', () => renderCatalog());
+    document.getElementById('sortSelect')?.addEventListener('change', () => renderCatalog());
+    
+    window.addToCart = addToCart;
+    window.removeFromCart = removeFromCart;
+    
+    checkAuth();
+</script>
+<footer><p>© 2025 Passion Sure — бескомпромиссная страсть к итальянскому стилю</p></footer>
+</body>
+</html>

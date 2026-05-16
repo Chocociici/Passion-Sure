@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Админ-панель | Passion Sure</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #0a0a0a; color: #eaeaea; }
+        :root { --gold: #d4af37; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 0 2rem; }
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 0;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+            flex-wrap: wrap;
+        }
+        .logo h1 { font-size: 1.8rem; background: linear-gradient(135deg,#fff,var(--gold)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .nav-links { display: flex; gap: 2rem; align-items: center; flex-wrap: wrap; }
+        .nav-links a { color: #eaeaea; text-decoration: none; font-weight: 500; }
+        .nav-links a:hover { color: var(--gold); }
+        .btn-outline { background: transparent; border: 1px solid var(--gold); padding: 0.5rem 1.2rem; border-radius: 2rem; color: var(--gold); cursor: pointer; }
+        .btn-primary { background: var(--gold); border: none; padding: 0.5rem 1.5rem; border-radius: 2rem; font-weight: 600; color: #0a0a0a; cursor: pointer; }
+        .admin-container { max-width: 1200px; margin: 2rem auto; padding: 2rem; background: #111; border-radius: 2rem; border: 1px solid rgba(212,175,55,0.3); }
+        .form-section { background: #1a1a1a; padding: 1.5rem; border-radius: 1.5rem; margin-bottom: 2rem; }
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; color: var(--gold); }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 0.8rem; border-radius: 1rem; background: #222; border: 1px solid #444; color: white; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 1rem; text-align: left; border-bottom: 1px solid #333; }
+        th { color: var(--gold); }
+        .edit-btn, .delete-btn { padding: 0.3rem 0.8rem; border-radius: 1rem; border: none; cursor: pointer; margin: 0.2rem; }
+        .edit-btn { background: #3498db; color: white; }
+        .delete-btn { background: #c0392b; color: white; }
+        .access-denied { background: rgba(192,57,43,0.2); padding: 2rem; border-radius: 1rem; text-align: center; }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(10px);
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+        .modal-content { background: #1a1a1a; border-radius: 2rem; padding: 2rem; width: 90%; max-width: 450px; border: 1px solid var(--gold); }
+        .modal-content input { width: 100%; margin: 0.5rem 0; padding: 0.8rem; border-radius: 1rem; background: #222; border: 1px solid #444; color: white; }
+        footer { text-align: center; padding: 2rem; border-top: 1px solid #222; margin-top: 3rem; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="navbar">
+        <div class="logo"><h1>PASSION SURE | АДМИН</h1></div>
+        <div class="nav-links">
+            <a href="index.html">Главная</a>
+            <a href="catalog.html">Каталог</a>
+            <a href="profile.html">Профиль</a>
+            <a href="admin.html">Админ</a>
+        </div>
+    </div>
+
+    <div class="admin-container" id="adminPanel">
+        <div id="accessDenied" class="access-denied" style="display:none;">
+            <i class="fas fa-lock" style="font-size: 3rem; color: #c0392b;"></i>
+            <h2 style="margin: 1rem 0;">Доступ запрещён</h2>
+            <p>Эта страница доступна только администраторам.</p>
+            <button id="gotoLoginBtn" class="btn-primary" style="margin-top: 1rem;">Войти как администратор</button>
+        </div>
+        
+        <div id="adminContent" style="display:none;">
+            <h2><i class="fas fa-crown"></i> Управление товарами</h2>
+            
+            <div class="form-section">
+                <h3>➕ Добавить товар</h3>
+                <div class="form-group"><label>Название</label><input type="text" id="productName" placeholder="Ferrari SF90"></div>
+                <div class="form-group"><label>Цена €</label><input type="number" id="productPrice" placeholder="489000"></div>
+                <div class="form-group"><label>Количество</label><input type="number" id="productStock" placeholder="10"></div>
+                <div class="form-group"><label>Категория</label><input type="text" id="productCategory" placeholder="Суперкары, Аксессуары..."></div>
+                <div class="form-group"><label>URL картинки</label><input type="text" id="productImage" placeholder="https://..."></div>
+                <div class="form-group"><label>Иконка (эмодзи)</label><input type="text" id="productIcon" placeholder="🏎️"></div>
+                <div class="form-group"><label>Описание</label><textarea id="productDescription" rows="2" placeholder="Краткое описание"></textarea></div>
+                <button id="addProductBtn" class="btn-primary">➕ Добавить</button>
+            </div>
+            
+            <div class="form-section">
+                <h3>📦 Список товаров</h3>
+                <div id="productsList">Загрузка...</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="authModal" class="modal">
+    <div class="modal-content">
+        <span class="close-modal" style="float:right;cursor:pointer;">&times;</span>
+        <h2>Вход администратора</h2>
+        <input type="text" id="adminLogin" placeholder="Логин">
+        <input type="password" id="adminPassword" placeholder="Пароль">
+        <button id="adminLoginBtn" class="btn-primary">Войти</button>
+    </div>
+</div>
+
+<script>
+    let currentUser = null;
+    
+    async function apiCall(endpoint, options = {}) {
+        const res = await fetch(`/api${endpoint}`, {
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            ...options,
+            body: options.body ? JSON.stringify(options.body) : undefined
+        });
+        return res.json();
+    }
+    
+    async function checkAuth() {
+        const data = await apiCall('/me');
+        currentUser = data.user;
+        if (currentUser && currentUser.role === 'admin') {
+            document.getElementById('accessDenied').style.display = 'none';
+            document.getElementById('adminContent').style.display = 'block';
+            loadProducts();
+        } else {
+            document.getElementById('accessDenied').style.display = 'block';
+            document.getElementById('adminContent').style.display = 'none';
+        }
+    }
+    
+    async function loadProducts() {
+        const data = await apiCall('/products');
+        const products = data.products || [];
+        const container = document.getElementById('productsList');
+        if (products.length === 0) {
+            container.innerHTML = '<p>Нет товаров. Добавьте первый!</p>';
+            return;
+        }
+        container.innerHTML = `<table><thead><tr><th>ID</th><th>Изобр.</th><th>Название</th><th>Категория</th><th>Цена</th><th>Склад</th><th>Действия</th></thead><tbody>${
+            products.map(p => `<tr>
+                <td>${p.id}</td>
+                <td>${p.image_url ? `<img src="${p.image_url}" style="width:50px;height:50px;object-fit:cover;border-radius:0.5rem;" onerror="this.style.display='none'">` : (p.icon || '🏎️')}</td>
+                <td><input type="text" id="name_${p.id}" value="${p.name.replace(/"/g, '&quot;')}" style="width:100%;background:#2a2a2a;border:1px solid #555;color:white;padding:0.3rem;border-radius:0.5rem;"></td>
+                <td><input type="text" id="category_${p.id}" value="${p.category || ''}" style="width:100%;background:#2a2a2a;border:1px solid #555;color:white;padding:0.3rem;border-radius:0.5rem;"></td>
+                <td><input type="number" id="price_${p.id}" value="${p.price}" style="width:100%;background:#2a2a2a;border:1px solid #555;color:white;padding:0.3rem;border-radius:0.5rem;"></td>
+                <td><input type="number" id="stock_${p.id}" value="${p.stock}" style="width:100%;background:#2a2a2a;border:1px solid #555;color:white;padding:0.3rem;border-radius:0.5rem;"></td>
+                <td><button class="edit-btn" onclick="updateProduct(${p.id})">Сохранить</button> <button class="delete-btn" onclick="deleteProduct(${p.id})">Удалить</button></td>
+            </tr>`).join('')
+        }</tbody></table>`;
+    }
+    
+    async function addProduct() {
+        const name = document.getElementById('productName').value;
+        const price = parseFloat(document.getElementById('productPrice').value);
+        const stock = parseInt(document.getElementById('productStock').value);
+        const category = document.getElementById('productCategory').value;
+        const image_url = document.getElementById('productImage').value;
+        const icon = document.getElementById('productIcon').value;
+        const description = document.getElementById('productDescription').value;
+        if (!name || isNaN(price)) return alert('Заполните название и цену');
+        const res = await apiCall('/admin/products', { method: 'POST', body: { name, price, stock, category, image_url, icon, description } });
+        if (res.success) { alert('Товар добавлен!'); loadProducts(); clearForm(); }
+        else alert('Ошибка');
+    }
+    
+    async function updateProduct(id) {
+        const name = document.getElementById(`name_${id}`).value;
+        const price = parseFloat(document.getElementById(`price_${id}`).value);
+        const stock = parseInt(document.getElementById(`stock_${id}`).value);
+        const category = document.getElementById(`category_${id}`).value;
+        const res = await apiCall(`/admin/products/${id}`, { method: 'PUT', body: { name, price, stock, category } });
+        if (res.success) { alert('Обновлено!'); loadProducts(); }
+        else alert('Ошибка');
+    }
+    
+    async function deleteProduct(id) {
+        if (confirm('Удалить товар?')) {
+            const res = await apiCall(`/admin/products/${id}`, { method: 'DELETE' });
+            if (res.success) { alert('Удалено!'); loadProducts(); }
+            else alert('Ошибка');
+        }
+    }
+    
+    function clearForm() {
+        ['productName', 'productPrice', 'productStock', 'productCategory', 'productImage', 'productIcon', 'productDescription'].forEach(id => {
+            document.getElementById(id).value = '';
+        });
+    }
+    
+    // Модалка
+    const modal = document.getElementById('authModal');
+    document.getElementById('gotoLoginBtn').onclick = () => modal.style.display = 'flex';
+    document.querySelector('.close-modal').onclick = () => modal.style.display = 'none';
+    document.getElementById('adminLoginBtn').onclick = async () => {
+        const login = document.getElementById('adminLogin').value;
+        const password = document.getElementById('adminPassword').value;
+        const res = await apiCall('/login', { method: 'POST', body: { login, password } });
+        if (res.success) { modal.style.display = 'none'; await checkAuth(); }
+        else alert('Неверный логин или пароль');
+    };
+    
+    document.getElementById('addProductBtn').onclick = addProduct;
+    window.updateProduct = updateProduct;
+    window.deleteProduct = deleteProduct;
+    
+    checkAuth();
+</script>
+<footer><p>© 2025 Passion Sure</p></footer>
+</body>
+</html>
