@@ -5,8 +5,9 @@ const session = require('express-session');
 const path = require('path');
 const app = express();
 
+// ========== ГЛАВНОЕ: раздаём все файлы из папки с проектом ==========
 app.use(express.json());
-app.use(express.static(path.join(__dirname, '/')));
+app.use(express.static(path.join(__dirname, '/'))); // ЭТО РАЗДАЁТ HTML, CSS, JS
 app.use(session({ secret: 'passion_sure_key', resave: false, saveUninitialized: false, cookie: { maxAge: 86400000 } }));
 
 const db = new sqlite3.Database('./passion.db');
@@ -50,13 +51,15 @@ db.serialize(() => {
     const adminHash = bcrypt.hashSync('admin123', 10);
     db.run(`INSERT OR IGNORE INTO users (id, username, password, role, email, phone) VALUES (1, 'admin', ?, 'admin', 'admin@passion.com', '+79991234567')`, [adminHash]);
     
-    // Товары для примера
-    db.run(`DELETE FROM products`);
-    const products = [
-        { name: 'Ferrari SF90 Stradale', price: 489000, stock: 3, images: 'https://www.amalgamcollection.com/cdn/shop/files/DSCF0853WIDEEDIT_2000x850_crop_center.jpg', description: 'Гибридный суперкар', category: 'Суперкары', seller_id: 1 }
-    ];
-    products.forEach(p => {
-        db.run(`INSERT INTO products (name, price, stock, images, description, category, seller_id) VALUES (?, ?, ?, ?, ?, ?, ?)`, [p.name, p.price, p.stock, p.images, p.description, p.category, p.seller_id]);
+    // Тестовые товары, если таблица пустая
+    db.get(`SELECT COUNT(*) as count FROM products`, (err, row) => {
+        if (row && row.count === 0) {
+            db.run(`INSERT INTO products (name, price, stock, images, description, category, seller_id) VALUES 
+                ('Ferrari SF90 Stradale', 489000, 3, 'https://www.amalgamcollection.com/cdn/shop/files/DSCF0853WIDEEDIT_2000x850_crop_center.jpg', 'Гибридный суперкар 1000 л.с.', 'Суперкары', 1),
+                ('Lamborghini Revuelto', 600000, 2, 'https://hips.hearstapps.com/hmg-prod/images/2024-lamborghini-revuelto-lightning-lap-2025-378-67ae462c26ed6.jpg', 'Первый V12 гибрид', 'Суперкары', 1),
+                ('Maserati MC20', 210000, 5, 'https://avatars.mds.yandex.net/get-vertis-journal/4220003/Maserati-GranTurismo-110-ANNIVERSARIO-Rame-Folgore-2-2048x1152.webp', 'Итальянская элегантность', 'Спорткары', 1)
+            `);
+        }
     });
 });
 
@@ -136,10 +139,22 @@ app.get('/api/orders', (req, res) => {
     db.all(`SELECT * FROM orders WHERE user_id = ? ORDER BY date DESC`, [req.session.userId], (err, orders) => res.json({ orders: orders || [] }));
 });
 
-// Админ-панель
+// ============= АДМИН-ПАНЕЛЬ (HTML страница) =============
 app.get('/admin', (req, res) => {
     if (!req.session.user || req.session.user.role !== 'admin') {
-        return res.redirect('/?error=Доступ запрещён');
+        return res.send(`
+            <!DOCTYPE html>
+            <html>
+            <head><title>Доступ запрещён</title>
+            <style>body{background:#0a0a0a;color:white;text-align:center;padding:50px;font-family:Arial;}</style>
+            </head>
+            <body>
+                <h1>⛔ Доступ запрещён</h1>
+                <p>Эта страница доступна только администраторам.</p>
+                <a href="/" style="color:#d4af37;">Вернуться на главную</a>
+            </body>
+            </html>
+        `);
     }
     res.send(`
         <!DOCTYPE html>
@@ -149,11 +164,11 @@ app.get('/admin', (req, res) => {
             <meta charset="UTF-8">
             <style>
                 * { margin: 0; padding: 0; box-sizing: border-box; }
-                body { font-family: 'Inter', sans-serif; background: #0a0a0a; color: #eaeaea; padding: 2rem; }
+                body { font-family: Arial, sans-serif; background: #0a0a0a; color: #eaeaea; padding: 2rem; }
                 .container { max-width: 1200px; margin: 0 auto; }
                 h1 { color: #d4af37; margin-bottom: 2rem; }
                 .stats { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px,1fr)); gap: 1rem; margin-bottom: 2rem; }
-                .card { background: #1a1a1a; padding: 1.5rem; border-radius: 1rem; border: 1px solid #333; }
+                .card { background: #1a1a1a; padding: 1.5rem; border-radius: 1rem; }
                 .card h3 { color: #d4af37; margin-bottom: 0.5rem; }
                 .card .number { font-size: 2rem; font-weight: bold; }
                 table { width: 100%; border-collapse: collapse; background: #111; border-radius: 1rem; overflow: hidden; }
@@ -176,7 +191,7 @@ app.get('/admin', (req, res) => {
                     <h3>➕ Добавить товар</h3>
                     <input type="text" id="prodName" placeholder="Название">
                     <input type="number" id="prodPrice" placeholder="Цена €">
-                    <input type="number"id="prodStock" placeholder="Количество">
+                    <input type="number" id="prodStock" placeholder="Количество">
                     <input type="text" id="prodCategory" placeholder="Категория">
                     <input type="text" id="prodImage" placeholder="URL картинки">
                     <textarea id="prodDesc" placeholder="Описание"></textarea>
@@ -202,7 +217,7 @@ app.get('/admin', (req, res) => {
                 async function loadProducts() {
                     const data = await apiCall('/products');
                     const products = data.products || [];
-                    document.getElementById('productsList').innerHTML = \`<table><thead><tr><th>ID</th><th>Фото</th><th>Название</th><th>Цена</th><th>Склад</th><th>Действия</th></tr></thead><tbody>\${products.map(p => \`<tr><td>\${p.id}</td><td><img src="\${p.images?.split(',')[0] || ''}" style="width:50px;height:50px;object-fit:cover;" onerror="this.style.display='none'"></td><td><input type="text" id="name_\${p.id}" value="\${p.name}" style="background:#222; color:white; width:100%;"></td><td><input type="number" id="price_\${p.id}" value="\${p.price}" style="background:#222; color:white; width:100px;"></td><td><input type="number" id="stock_\${p.id}" value="\${p.stock}" style="background:#222; color:white; width:80px;"></td><td><button class="btn" style="background:#3498db;" onclick="updateProduct(\${p.id})">Сохранить</button> <button class="btn btn-danger" onclick="deleteProduct(\${p.id})">Удалить</button></td></tr>\`).join('')}</tbody></table>\`;
+                    document.getElementById('productsList').innerHTML = \`<table><thead><tr><th>ID</th><th>Фото</th><th>Название</th><th>Цена</th><th>Склад</th><th>Действия</th></tr></thead><tbody>\${products.map(p => \`<tr><td>\${p.id}</td><td><img src="\${p.images?.split(',')[0] || ''}" style="width:50px;height:50px;object-fit:cover;" onerror="this.style.display='none'"></td><td><input type="text" id="name_\${p.id}" value="\${p.name.replace(/"/g, '&quot;')}" style="background:#222; color:white; width:100%;"></td><td><input type="number" id="price_\${p.id}" value="\${p.price}" style="background:#222; color:white; width:100px;"></td><td><input type="number" id="stock_\${p.id}" value="\${p.stock}" style="background:#222; color:white; width:80px;"></td><td><button class="btn" style="background:#3498db;" onclick="updateProduct(\${p.id})">Сохранить</button> <button class="btn btn-danger" onclick="deleteProduct(\${p.id})">Удалить</button></td></tr>\`).join('')}</tbody></table>\`;
                 }
                 async function addProduct() {
                     const name = document.getElementById('prodName').value;
@@ -213,7 +228,7 @@ app.get('/admin', (req, res) => {
                     const description = document.getElementById('prodDesc').value;
                     if (!name || isNaN(price)) return alert('Заполните название и цену');
                     const res = await apiCall('/admin/products', { method: 'POST', body: { name, price, stock, category, images, description } });
-                    if (res.success) { alert('Товар добавлен!'); loadProducts(); }
+                    if (res.success) { alert('Товар добавлен!'); loadProducts(); loadStats(); }
                     else alert('Ошибка');
                 }
                 async function updateProduct(id) {
@@ -227,7 +242,7 @@ app.get('/admin', (req, res) => {
                 async function deleteProduct(id) {
                     if (confirm('Удалить товар?')) {
                         const res = await apiCall(\`/admin/products/\${id}\`, { method: 'DELETE' });
-                        if (res.success) { alert('Удалено!'); loadProducts(); }
+                        if (res.success) { alert('Удалено!'); loadProducts(); loadStats(); }
                         else alert('Ошибка');
                     }
                 }
@@ -238,7 +253,7 @@ app.get('/admin', (req, res) => {
     `);
 });
 
-// API для админ-панели
+// ============= API для админ-панели =============
 app.post('/api/admin/products', (req, res) => {
     if (req.session.user?.role !== 'admin') return res.json({ error: 'Нет прав' });
     const { name, price, stock, images, description, category } = req.body;
@@ -262,4 +277,9 @@ app.delete('/api/admin/products/:id', (req, res) => {
     });
 });
 
-app.listen(3000, () => console.log('Сервер запущен на http://localhost:3000\n👑 Админ: admin / admin123'));
+// ============= ЗАПУСК СЕРВЕРА =============
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`🚀 Сервер запущен на http://localhost:${PORT}`);
+    console.log(`👑 Админ: admin / admin123`);
+});
